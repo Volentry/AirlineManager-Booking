@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     userId: {type: DataTypes.INTEGER,allowNull:false},
     status: {type: DataTypes.ENUM,allowNull:false,
       values:[BOOKED,CANCELLED,INITIATED,PENDING],
-      defaultValue:INITITATED
+      defaultValue:INITIATED
     },
     noOfSeats:{type: DataTypes.INTEGER,allowNull:false,
       defaultValue:1

@@ -4,6 +4,8 @@ const db = require('../models')
 const bookingRespository = new BookingRepository()
 const Apperror = require('../utils/errors/app-error');
 const { FLIGHT_SERVICE } = require('../config/server-config')
+const {ENUMS} = require('../utils/common');
+const {BOOKED,CANCELLED,INITIATED,PENDING} = ENUMS.Booking_Status
 const { message } = require('../utils/common/error-response')
 const {StatusCodes} = require('http-status-codes')
 const createBooking = async (data)=>{
@@ -38,7 +40,25 @@ const createBooking = async (data)=>{
    
 
 }
+async function  makePayment(data) {
+    const transaction = await db.sequelize.transaction()
+    try{
+        const bookingDetails = await bookingRespository.get(data.bookingId,transaction)
+        if(bookingDetails.totalCost!=data.totalCost){
+            throw new Apperror('the price doesnt match',StatusCodes.BAD_REQUEST)
+        }
+        if(bookingDetails.userId!=data.userId){
+            throw new Apperror('the userid doesnt match',StatusCodes.BAD_REQUEST)
+        }
+        const response = await bookingRespository.update(data.bookingId,{status:BOOKED},transaction)
+    }catch(error){
+        throw error
+
+    }
+    }
+    
 
 
 
-module.exports = {createBooking}
+
+module.exports = {createBooking,makePayment}
